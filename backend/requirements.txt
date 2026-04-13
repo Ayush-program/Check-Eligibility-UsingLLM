@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+python-multipart
+jinja2
+openai
+pypdf
+pdfplumber
+python-dotenv
+httpx
+groq
+pytesseract
+python-docx

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tender Eligibility Checker - Smart Evaluation System</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    
+    <link rel="stylesheet" href="/frontend/style.css?v=2">
+</head>
+
+<body>
+    <div id="particles"></div>
+
+    <div class="container">
+        
+        <div class="header">
+            <div
+                style="display: inline-flex; align-items: center; gap: 10px; margin-bottom: 25px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--primary); padding: 10px 28px; border-radius: 50px; animation: ai-pulse 3s infinite; backdrop-filter: blur(10px);">
+                <span style="font-size: 1.3rem;">🧠</span>
+                <span
+                    style="color: var(--text-main); font-family: var(--font-head); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; font-size: 0.9rem;">
+                    Powered by <span style="color: var(--primary);">Tender Solutions</span>
+                </span>
+            </div>
+            <h1 class="ai-gradient">Tender Eligibility AI Checker</h1>
+            <p
+                style="font-size: 1.25rem; color: var(--text-dim); max-width: 750px; margin: 0 auto; line-height: 1.6; opacity: 0.9;">
+                Upload your tender document and let our multi-parameter AI engine instantly determine your company's
+                eligibility sequence and compliance.
+            </p>
+        </div>
+
+        <div class="card">
+            <div class="upload-area" id="uploadArea">
+                <input type="file" id="fileInput" accept=".pdf">
+                <div style="font-size: 3rem;">📁</div>
+                <div>Click or drag and drop to upload tender PDF</div>
+                <div id="fileName" class="file-info" style="display: none;"></div>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center; position: relative;">
+                
+                <button class="btn-ai-extract" id="extractBtn" onclick="extract()">
+                    <span style="font-size: 1.5rem; text-shadow: 0 0 10px #00d2ff;">✨</span>
+                    <span class="ai-gradient-text">INITIATE AI EXTRACTOR</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="formContainer" style="display: none;"></div>
+        <div id="resultContainer" style="display: none;"></div>
+    </div>
+
+    <div id="loadingOverlay"
+        style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="text-align: center;">
+            <div class="score-visual" style="width: 100px; height: 100px; margin-bottom: 20px;">
+                <div class="score-inner" style="width: 80px; height: 80px; box-shadow: 0 0 20px var(--primary);">
+                    <div class="loading-pulse"></div>
+                </div>
+            </div>
+            <div style="font-family: var(--font-head); font-size: 1.2rem; letter-spacing: 1px;">AI ANALYZING...</div>
+        </div>
+    </div>
+
+    
+    <script src="/frontend/app.js?v=4"></script>
+</body>
+
+</html>
