@@ -26,20 +26,6 @@ This project is an AI-powered eligibility checking system designed to analyze te
 
 ---
 
-## 📂 Project Structure
-
-```id="h2n2ps"
-.
-├── main.py                 # FastAPI application entry point
-├── routes/                 # API routes
-├── services/               # LLM processing logic
-├── utils/                  # Helper functions
-├── requirements.txt        # Dependencies
-├── README.md
-```
-
----
-
 ## ⚙️ Installation
 
 ### 1️⃣ Clone Repository
