@@ -16,3 +16,4 @@ uploads/
 
 # Ignore pyright configs if they are just local
 pyrightconfig.json.bak
+llmenv/
