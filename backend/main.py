@@ -99,6 +99,17 @@ async def lifespan(app: FastAPI):
         raise RuntimeError(f"Missing environment variables: {missing}")
     logger.info("All required environment variables are set")
     logger.info(f"Running in {'DEVELOPMENT' if IS_DEV else 'PRODUCTION'} mode")
+    # Live Groq API key validation — catches wrong/placeholder keys immediately
+    groq_key = os.getenv("GROQ_API_KEY", "")
+    if groq_key in ("", "your-groq-api-key-here", "your-API-key"):
+        logger.error("GROQ_API_KEY is still set to a placeholder value. Please set a real key.")
+        raise RuntimeError("GROQ_API_KEY is a placeholder. Update your .env file.")
+    try:
+        from groq import Groq as _Groq
+        _Groq(api_key=groq_key).models.list()
+        logger.info("✅ Groq API key validated successfully")
+    except Exception as _e:
+        logger.warning(f"⚠️ Groq API key validation failed: {_e}. Extractions will fail at runtime.")
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     os.makedirs(DOWNLOADS_DIR, exist_ok=True)
     await connect_db()

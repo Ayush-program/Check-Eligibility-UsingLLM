@@ -376,16 +376,6 @@ class EligibilityChecker:
             })
             return self.score_weights["documents"]
     
-    def _get_eligibility_level(self, score: int) -> str:
-        """Get eligibility level based on probability score (Not heavily used anymore since level is mapped in main check, but kept for compatibility)"""
-        if score == 100:
-            return "Eligible"
-        elif score >= 50:
-            return "Low Eligibility"
-        else:
-            return "Not Eligible"
-
-
 def check_eligibility(company: Dict[str, Any], tender: Dict[str, Any]) -> Dict[str, Any]:
     """Wrapper function for backward compatibility"""
     checker = EligibilityChecker()

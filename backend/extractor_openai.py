@@ -135,7 +135,8 @@ class CompleteTenderExtractor:
                             for doc in docs:
                                 if doc not in data["documents_by_section"]["atc"]:
                                     data["documents_by_section"]["atc"].append(doc)
-                        logger.info(f"✅ Added {len(atc_docs.get('atc', []))} ATC documents.")
+                        total_atc_added = len(data["documents_by_section"]["atc"])
+                        logger.info(f"✅ Added {total_atc_added} ATC documents to 'atc' section.")
                     except Exception as e:
                         logger.warning(f"⚠️ ATC AI Pass failed: {e}")
 
@@ -266,7 +267,7 @@ class CompleteTenderExtractor:
                 with pdfplumber.open(file_path) as pdf:
                     for page in pdf.pages:
                         text += (page.extract_text() or "") + "\n"
-            elif ext in [".docx", ".doc"]:
+            elif ext == ".docx":
                 try:
                     from docx import Document
                     doc = Document(file_path)
@@ -278,9 +279,38 @@ class CompleteTenderExtractor:
                             if row_text:
                                 text += " | ".join(row_text) + "\n"
                 except Exception as e:
-                    logger.warning(f"docx text extraction failed, falling back to raw read: {e}")
-                    with open(file_path, 'r', errors='ignore') as f:
-                        text = f.read()
+                    logger.warning(f".docx text extraction failed: {e}")
+            elif ext == ".doc":
+                # .doc is old binary Word format — python-docx cannot open it.
+                # Try python-docx first (works if file was mis-labelled as .doc).
+                extracted = False
+                try:
+                    from docx import Document
+                    doc = Document(file_path)
+                    for para in doc.paragraphs:
+                        text += para.text + "\n"
+                    for table in doc.tables:
+                        for row in table.rows:
+                            row_text = [cell.text.strip() for cell in row.cells if cell.text.strip()]
+                            if row_text:
+                                text += " | ".join(row_text) + "\n"
+                    extracted = True
+                    logger.info(".doc opened successfully as docx")
+                except Exception:
+                    pass
+                if not extracted:
+                    # Binary fallback: extract readable ASCII text sequences from .doc
+                    # Old .doc stores paragraphs as ASCII/UTF-16 runs — this finds them.
+                    try:
+                        with open(file_path, 'rb') as f:
+                            raw = f.read()
+                        import re as _re
+                        # Extract all printable ASCII chunks of 5+ chars
+                        chunks = _re.findall(rb'[\x20-\x7E]{5,}', raw)
+                        text = ' '.join(c.decode('ascii', errors='ignore') for c in chunks)
+                        logger.info(f".doc binary fallback extracted {len(text)} chars")
+                    except Exception as e2:
+                        logger.warning(f".doc binary extraction failed: {e2}")
             elif ext == ".xlsx":
                 try:
                     import openpyxl

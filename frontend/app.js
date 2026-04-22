@@ -262,7 +262,6 @@ function toggleAuthorizationStatus() {
 async function extract() {
     showSuccess('Starting AI extraction pipeline...');
     console.log("extract() triggered!");
-    console.log("extract() triggered!");
     if (!selectedFile) {
         showError('Please select a PDF file first');
         return;
@@ -397,11 +396,6 @@ function validatePerformance(input) {
     errorEl.style.display = 'none';
     return true;
 }
-// Update exemption info
-function updateExemptionInfo() {
-    // Deprecated logic. Now handled dynamically during renderForm via tenderData extraction.
-}
-
 // Select all documents
 function selectAllDocuments() {
     document.querySelectorAll('.doc-checkbox').forEach(cb => {
