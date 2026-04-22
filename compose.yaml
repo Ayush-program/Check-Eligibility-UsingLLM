@@ -1,0 +1,32 @@
+name: tender-eligibility
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - API_KEY=${API_KEY}
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:8000}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///./data/tender_eligibility.db}
+    volumes:
+      # Persist uploads, downloads, and SQLite DB outside the container
+      - uploads_data:/app/uploads
+      - downloads_data:/app/downloads
+      - db_data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  uploads_data:
+  downloads_data:
+  db_data:

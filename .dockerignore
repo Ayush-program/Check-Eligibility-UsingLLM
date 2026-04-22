@@ -1,0 +1,55 @@
+# ==================================================
+# .dockerignore — Exclude files from Docker build context
+# Prevents secrets, dev files, and large dirs from
+# being copied into the Docker image.
+# ==================================================
+
+# Git
+.git
+.gitignore
+
+# Python virtual environments
+llmenv/
+venv/
+.venv/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Secrets — NEVER allow .env into the image
+.env
+*.env
+
+# Local database (mount as volume in production)
+*.db
+*.sqlite
+*.sqlite3
+
+# Development tools
+.vscode/
+pyrightconfig.json*
+*.bak
+
+# Uploaded/Downloaded user files (mount as volume)
+uploads/
+downloads/
+
+# Test artifacts
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,19 +1,66 @@
+# ==================================================
+# .gitignore — Tender Eligibility Checker
+# ==================================================
+
+# --- Secrets (MOST IMPORTANT) ---
+.env
+*.env
+!.env.example
+
+# --- Python ---
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyo
+*.pyd
+.Python
 
-# Environments
-.env
+# --- Python Virtual Environments ---
 .venv/
 venv/
 ENV/
-
-# Uploaded files
-uploads/
-
-# IDE
-.vscode/
-
-# Ignore pyright configs if they are just local
-pyrightconfig.json.bak
 llmenv/
+
+# --- Testing & Coverage ---
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+
+# --- Build Artifacts ---
+dist/
+build/
+*.egg-info/
+
+# --- Database Files ---
+*.db
+*.sqlite
+*.sqlite3
+
+# --- User Uploaded / Downloaded Files ---
+uploads/
+downloads/
+backend/uploads/
+backend/downloads/
+
+# --- Logs ---
+*.log
+logs/
+
+# --- IDE ---
+.vscode/
+.idea/
+pyrightconfig.json
+pyrightconfig.json.bak
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# --- Docker ---
+.docker/
+
+# --- AI Model Cache (large files) ---
+.cache/

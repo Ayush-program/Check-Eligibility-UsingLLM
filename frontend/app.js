@@ -1,29 +1,65 @@
+// app.js - Production ready version
 let tenderData = {}
 let selectedFile = null
+let API_BASE_URL = ''
+let API_KEY = ''
 
+// Load configuration from backend
+// Load configuration from backend
+async function loadConfig() {
+    try {
+        const res = await apiFetch('/config');
+        const config = await res.json();
+        API_BASE_URL = config.base_url;
+        // For local development, no API key needed because backend skips check
+        API_KEY = 'dev-bypass';
+    } catch (e) {
+        console.error('Failed to load config:', e);
+        API_BASE_URL = window.location.origin;
+        API_KEY = 'dev-bypass';
+    }
+}
+
+// API fetch wrapper with auth
+async function apiFetch(url, options = {}) {
+    const headers = {
+        'X-API-Key': API_KEY,
+        ...options.headers
+    };
+    return fetch(url, { ...options, headers });
+}
+// Initialize config on page load
+loadConfig();
+
+// Update downloadATC function to use API_BASE_URL
 window.downloadATC = async function (url, filename) {
     try {
-        // Fetch the file as a blob to force the browser to trigger a download
         const response = await fetch(url);
         const blob = await response.blob();
         const objectUrl = window.URL.createObjectURL(blob);
-
         const a = document.createElement('a');
         a.href = objectUrl;
         a.download = filename || 'ATC_Document.pdf';
         document.body.appendChild(a);
         a.click();
-
         setTimeout(() => {
             window.URL.revokeObjectURL(objectUrl);
             document.body.removeChild(a);
         }, 1000);
     } catch (e) {
         console.error("Forced download failed:", e);
-        // Fallback to opening in a new tab if blob fetch fails
         window.open(url, '_blank');
     }
 };
+
+// In all fetch calls, replace fetch with apiFetch
+// Example:
+// const res = await apiFetch('/extract', { method: 'POST', body: fd });
+
+// The rest of the file remains largely the same, just ensure:
+// 1. All fetch calls use apiFetch
+// 2. The local_url construction uses API_BASE_URL:
+//    local_url = `${API_BASE_URL}/downloads/${filename}`;
 
 // Get DOM elements
 const fileInput = document.getElementById('fileInput');
@@ -239,7 +275,7 @@ async function extract() {
     uploadArea.classList.add('processing');
 
     try {
-        const res = await fetch('/extract', {
+        const res = await apiFetch('/extract', {
             method: 'POST',
             body: fd
         });
@@ -259,7 +295,7 @@ async function extract() {
         // Try to download ATC document locally for viewing
         if (tenderData.atc_document_link) {
             try {
-                const downloadRes = await fetch('/download_atc', {
+                const downloadRes = await apiFetch('/download_atc', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ url: tenderData.atc_document_link })
@@ -1263,7 +1299,7 @@ async function checkEligibility() {
     showLoading(true);
 
     try {
-        const res = await fetch('/check', {
+        const res = await apiFetch('/check', {
             method: 'POST',
             body: fd
         });
@@ -1475,7 +1511,7 @@ function displayResult(result, ai) {
 // Check backend connection on page load
 async function checkBackendConnection() {
     try {
-        const res = await fetch('/health');
+        const res = await apiFetch('/health');
         if (res.ok) {
             console.log('✅ Backend is running');
         } else {

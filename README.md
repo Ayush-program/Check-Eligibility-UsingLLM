@@ -1,149 +1,139 @@
-# 🤖 AI Eligibility Checker (LLM + FastAPI)
+# 🏛️ Tender Eligibility Checker — AI Powered
 
-## 📌 Project Overview
-
-This project is an AI-powered eligibility checking system designed to analyze tender documents and determine whether a user qualifies for bidding. It leverages Large Language Models (LLMs) for intelligent data extraction and FastAPI for building a scalable backend service.
+An intelligent system to check company eligibility for GeM (Government e-Marketplace) tenders. Upload a tender PDF and let the AI extract all requirements, then enter your company details to get an instant eligibility score.
 
 ---
 
-## 🎯 Key Features
+## ✨ Features
 
-* 📄 Automatic extraction of eligibility criteria from tender documents
-* 🧠 AI-based analysis using LLMs
-* ⚡ FastAPI backend for real-time processing
-* ✅ Automated qualification decision (Eligible / Not Eligible)
-* 🔍 Reduces manual effort and improves accuracy
-
----
-
-## 🛠️ Tech Stack
-
-* Python
-* FastAPI
-* LLM (OpenAI / other models)
-* NLP (Natural Language Processing)
-* Pandas / JSON processing
+- 📄 **AI Extraction** — Automatically extracts turnover, experience, documents, and classification from tender PDFs
+- 🤖 **LLM Analysis** — Uses Groq (Llama 3.3 70B) + RAG pipeline for deep document understanding
+- 📊 **Eligibility Scoring** — Multi-parameter weighted scoring with MSE/Startup exemption support
+- 🔍 **Keyword Detection** — Detects MCC, NDD, ISO, BIS, Blacklisting, and other critical clauses
+- 📎 **ATC Processing** — Automatically downloads and parses Additional Terms & Conditions documents
+- 🔒 **Secure API** — Rate limiting, API key auth, security headers, SSRF protection
 
 ---
 
-## ⚙️ Installation
+## 🚀 Quick Start (Development)
 
-### 1️⃣ Clone Repository
+### Prerequisites
+- Python 3.11+
+- [Groq API Key](https://console.groq.com/) (free tier available)
 
-```bash id="iwr1s2"
-git clone https://github.com/Ayush-program/eligibility-checker.git
-cd eligibility-checker
+### 1. Clone & Setup
+```bash
+git clone https://github.com/your-username/LLm_check_eligibility.git
+cd LLm_check_eligibility
+```
+
+### 2. Configure Environment
+```bash
+cp backend/.env.example backend/.env
+# Edit backend/.env and add your GROQ_API_KEY
+```
+
+### 3. Install Dependencies
+```bash
+pip install -r backend/requirements.txt
+```
+
+### 4. Run the App
+```bash
+python start.py
+# Opens http://localhost:3000 in your browser
 ```
 
 ---
 
-### 2️⃣ Install Dependencies
+## 🐳 Docker (Recommended)
 
-```bash id="fdg03r"
-pip install -r requirements.txt
+```bash
+# Copy and configure environment
+cp backend/.env.example backend/.env
+# Edit .env with your keys
+
+# Start with Docker Compose
+docker compose up --build
+
+# App will be available at http://localhost:8000
 ```
 
 ---
 
-### 3️⃣ Set Environment Variables
+## 🔧 Environment Variables
 
-Create `.env` file:
+| Variable | Required | Description |
+|---|:---:|---|
+| `GROQ_API_KEY` | ✅ | Your Groq AI API key |
+| `API_KEY` | ✅ (prod) | Secret key for API authentication |
+| `ENVIRONMENT` | ❌ | `development` or `production` (default: `production`) |
+| `ALLOWED_ORIGINS` | ❌ | Comma-separated CORS origins |
+| `DATABASE_URL` | ❌ | PostgreSQL URL (defaults to SQLite for dev) |
 
-```env id="6dj8gm"
-OPENAI_API_KEY=your_api_key_here
-```
+> See `backend/.env.example` for full documentation.
 
 ---
 
-## ▶️ How to Run
+## 🏗️ Project Structure
 
-```bash id="ujqg7h"
-uvicorn main:app --reload
 ```
-
-👉 Server will run on:
-
-```id="v3znw2"
-http://127.0.0.1:8000
+LLm_check_eligibility/
+├── backend/
+│   ├── main.py              # FastAPI app, routes, middleware
+│   ├── extractor_openai.py  # PDF extraction with Groq + RAG
+│   ├── eligibility.py       # Eligibility scoring engine
+│   ├── ai_explainer.py      # AI explanation generator
+│   ├── database.py          # Database models & connection
+│   ├── utils.py             # Utility functions
+│   ├── requirements.txt     # Pinned Python dependencies
+│   └── .env.example         # Environment variable template
+├── frontend/
+│   ├── index.html           # Single-page app
+│   ├── app.js               # Frontend logic
+│   └── style.css            # Styling
+├── Dockerfile               # Docker image definition
+├── compose.yaml             # Docker Compose config
+├── .dockerignore            # Docker build exclusions
+└── start.py                 # Development startup script
 ```
 
 ---
 
 ## 📡 API Endpoints
 
-### 🔹 Check Eligibility
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/health` | Health check (DB, Groq API, disk) |
+| `GET` | `/config` | Frontend config (base URL) |
+| `POST` | `/extract` | Extract tender data from PDF |
+| `POST` | `/check` | Check company eligibility |
+| `POST` | `/download_atc` | Download ATC document |
 
-```http id="2e5g1p"
-POST /check-eligibility
-```
-
-### Request Example:
-
-```json id="cz6a9x"
-{
-  "document_text": "Tender requires 3 years experience and turnover above 10 lakh..."
-}
-```
-
-### Response:
-
-```json id="t6u6bj"
-{
-  "status": "Eligible",
-  "reason": "Meets experience and financial criteria"
-}
-```
+> API docs available at `/docs` in **development mode only**.
 
 ---
 
-## 🧠 How It Works
+## 🔒 Security
 
-1. **Input Processing**
-
-   * Accepts tender document (text or extracted PDF content)
-
-2. **LLM Analysis**
-
-   * Extracts key eligibility conditions
-
-3. **Decision Engine**
-
-   * Compares user data with requirements
-
-4. **Output**
-
-   * Returns eligibility status with explanation
+- API Key authentication on all write endpoints
+- Rate limiting: 10 req/min extract, 20 req/min check
+- SSRF protection on URL downloads
+- Security headers: HSTS, CSP, X-Frame-Options, X-Content-Type-Options
+- MIME type validation on file uploads
+- CORS restricted to configured origins
 
 ---
 
-## ⚠️ Notes
+## 🤝 Contributing
 
-* Requires LLM API key
-* Accuracy depends on input quality
-* Not a legal decision system (advisory use)
-
----
-
-## 🚀 Future Improvements
-
-* Add PDF upload support
-* Build frontend dashboard
-* Improve model accuracy
-* Deploy on cloud (AWS / Render)
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Run tests: `pytest backend/tests/`
+4. Submit a Pull Request
 
 ---
 
-## 👨‍💻 Author
+## 📝 License
 
-**Ayush Gaudani**
-AI/ML Engineer
-
----
-
-## ⭐ Use Case
-
-* Tender consulting companies
-* MSMEs applying for bids
-* Automated document analysis systems
-
----
+MIT License — See [LICENSE](LICENSE) for details.

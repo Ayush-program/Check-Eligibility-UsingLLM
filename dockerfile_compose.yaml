@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - API_KEY=${API_KEY:-change-me}
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8000
+    volumes:
+      - ./uploads:/app/uploads
+      - ./downloads:/app/downloads
+      - ./tender_eligibility.db:/app/tender_eligibility.db
+    restart: unless-stopped
